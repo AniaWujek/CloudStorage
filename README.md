@@ -1,0 +1,59 @@
+<<<<<<< HEAD
+SETUP
+
+jesli sciagacie z gita, to najlepiej najpierw sciagnac z gita, a potem zainstalowac w katalogu flask_env srodowisko wirtualne, a sam katalog ze srodowsikiem dpdac do .gitignore. Uwaga, poniewaz mamy jedna wersje na try osoby, najlepiej proby we wlasnym zakresie przeprowadzac na innej kopii, a commitowac tylko wazne rzeczy.
+
+
+sudo apt-get install -y python python-pip python-virtualenv nginx gunicorn
+utworzenie struktury katalogow(jesli nie sciagacie z gita) :
+
+/TIN/	|
+		|
+		--->/nginx/	|
+					|
+					---> /html/ (zawiera strony html, statyczne dane dla serwera)
+					---> /sites-available/ (zawiera pliki konfiguracyjne dla nginx'a)
+					---> nginx.conf
+					
+wirtualne srodowisko:
+cd flask_env
+sudo virtualenv env
+source env/bin/activate
+sudo pip install Flask==0.10.1
+sudo mkdir flask_project && cd flask_project
+sudo mkdir static (statyczna zawartosc serwera, trzeba dac sciezke nginx'owi)
+
+w katalogu flask_project tworzymy sobie aplikacje pythonowe, ktore uruchamiac bedzie flask, np.:
+---- *** ----
+from flask import Flask, jsonify
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return 'Flask is running!'
+
+@app.route('/data')
+def names():
+    data = {"names": ["John", "Jacob", "Julie", "Jennifer"]}
+    return jsonify(data)
+
+if __name__ == '__main__':
+    app.run()
+
+---- *** ----
+
+MAKE
+plik make kopiuje do katalogów nginxa powyzsza strukture katalogow, jako argument podajemy nazwe pliku konfiguracyjnego, ktory na zostac przeniesiony do /sites/enabled/:
+sudo make enabled=nazwa_pliku
+UWAGA samo make robi dowiazanie do katalogu, nie do pliku, wiec nie zapominajcie o argumencie. W razie czego ngonx sie pluje i trezba skasowac dowiazanie w /etc/nginx/sits-enabled. Nie przejmujcie się errorem ze dowiazanie istnieje. Jak istnieje to super.
+
+URUCHAMIANIE
+sudo service nginx start / status / stop / reload
+cd fask_env
+sudo source env/bin/activate
+cd flask_project
+sudo gunicorn app:app -b localhost:8000 (trzeba robic z katalogu w ktirym znajduje sie app.py)
+=======
+CloudStorage
+============
+>>>>>>> f23f97f8c29d7f2e810710ff8c1c84a091e9c6b5
