@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 SETUP
 
 jesli sciagacie z gita, to najlepiej najpierw sciagnac z gita, a potem zainstalowac w katalogu flask_env srodowisko wirtualne, a sam katalog ze srodowsikiem dpdac do .gitignore. Uwaga, poniewaz mamy jedna wersje na try osoby, najlepiej proby we wlasnym zakresie przeprowadzac na innej kopii, a commitowac tylko wazne rzeczy.
@@ -53,7 +52,3 @@ cd fask_env
 sudo source env/bin/activate
 cd flask_project
 sudo gunicorn app:app -b localhost:8000 (trzeba robic z katalogu w ktirym znajduje sie app.py)
-=======
-CloudStorage
-============
->>>>>>> f23f97f8c29d7f2e810710ff8c1c84a091e9c6b5
