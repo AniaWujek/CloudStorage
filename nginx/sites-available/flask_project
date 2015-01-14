@@ -1,28 +1,40 @@
 server {
+	listen 192.168.1.19:8000;
 	listen 127.0.0.1:8000;
 
 
 	
     location / {
-        proxy_pass http://127.0.0.1:8000; 
+        add_header Access-Control-Allow-Origin *;
+        proxy_pass http://127.0.0.1:8080;
+         
     }
     
     
     
     location /data {
-        alias  /home/anna/Pulpit/TIN/flask_env/flask_project/static/;
+        add_header Access-Control-Allow-Origin *;
+        alias  /home/anna/CloudStorage/flask_env/flask_project/static/;
 
 			location /data/nowe {
+			add_header Access-Control-Allow-Origin *;
 			alias /etc/nginx/html/;
 		} 
 			location /data/data {
+			add_header Access-Control-Allow-Origin *;
 			alias /etc/nginx/html/data;
 			}
 			
 			location /data/chat {
+			add_header Access-Control-Allow-Origin *;
 			alias /etc/nginx/html/chat;
 			}
 		
+    }
+    
+    location /cloud {
+        add_header Access-Control-Allow-Origin *;
+        alias /etc/nginx/html/cloud;
     }
 
 	
