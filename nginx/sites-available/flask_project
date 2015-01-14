@@ -1,5 +1,5 @@
 server {
-	listen 192.168.0.101:8000;
+	listen 127.0.0.1:8000;
 
 
 	
@@ -17,7 +17,12 @@ server {
 		} 
 			location /data/data {
 			alias /etc/nginx/html/data;
-		} 
+			}
+			
+			location /data/chat {
+			alias /etc/nginx/html/chat;
+			}
+		
     }
 
 	
