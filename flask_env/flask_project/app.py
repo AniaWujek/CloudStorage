@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request, json
+from flask import Flask, jsonify, render_template, request
 
 
 
@@ -26,12 +26,7 @@ def about():
 
 @app.route('/login', methods=['POST'])
 def login():
-	data = request.get_json(force=True)
-	login = data["username"]
-	haslo = data["password"]
-
-	print 'login '+login
-	print 'haslo '+haslo
+	dane = request.get_json()
 	return 'zalogowano'
 
 if __name__ == '__main__':
