@@ -3,6 +3,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from add2 import add_file
 from add2 import add_user
 from add2 import list_users
+from security import login
 from lib import csred
 
 from create import db
@@ -12,6 +13,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///CS.db'
 
 app.route('/addfile',methods=["POST"])(add_file)
 app.route('/adduser',methods=["POST"])(add_user)
+app.route('/login',methods=["POST"])(login)
 app.route('/list_users')(list_users)
 
 ###########################
@@ -34,11 +36,6 @@ def hasla():
 def about():
     return render_template('about.html')
 
-@app.route('/login', methods=['POST'])
-def login():
-	login = request.args.get('log')
-	password = request.args.get('passwd')
-	return 'zalogowano'
 #######################
 @app.before_first_request
 def cokolwiek():
