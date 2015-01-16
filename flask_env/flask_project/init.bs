@@ -1,0 +1,4 @@
+sudo service nginx start
+sudo service nginx status
+redis-server &&
+python app.py

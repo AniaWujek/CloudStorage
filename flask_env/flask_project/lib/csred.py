@@ -5,6 +5,7 @@ import sys
 maxtime_token = 30*60
 maxtime_status = 30*60
 maxtime_progress = 30*60
+maxtime_session = 30*60
 
 def init():
 	r=redis.Redis('localhost')
@@ -23,6 +24,17 @@ def token(login, file, r=redis.Redis('localhost')):
 		r.hset(info, 'token', token)
 		r.expire(info, (maxtime_token))
 		return int(r.hget(info, 'token'))
+
+def session_id(login, r=redis.Redis('localhost')):
+	login=login.lower()
+	if r.hexists(login, 'session_id'):
+		r.expire(login, (maxtime_session))
+		return int(r.hget(login, 'session_id'))
+	else:
+		sid=random.randint(0,sys.maxint)
+		r.hset(login, 'session_id', sid)
+		r.expire(login, (maxtime_session))
+		return int(r.hget(login, 'session_id'))
 
 def chktoken(login, r=redis.Redis('localhost')):
 	login=login.lower()

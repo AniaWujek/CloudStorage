@@ -54,3 +54,11 @@ cd fask_env
 sudo source env/bin/activate
 cd flask_project
 sudo gunicorn app:app -b localhost:8000 (trzeba robic z katalogu w ktirym znajduje sie app.py)
+
+INSTALACJA SERWERA HTTP:
+W folderze flask_env należy uruchomić skrypt config.sh. Zainstaluje on niezbędne biblioteki i przygotuje wirtualne środowisko dla pythona. Automatyczne tworzenie i uzupełnianie jest zakomentowane.
+W pliku req.txt są wymangania dla wirtualnego środowiska. Instalacja ręczna: pip install -r req.txt
+Sprawdzajcie co jakiś czas, czy środowisko jest aktualne.
+Zmiana środowiska/kontynuacja pracy: workon <nazwa środowiska>
+URUCHAMIANIE SERWERA HTTP:
+w flask_env/flask_project/init.bs są polecenia konieczne do uruchomienia serwera redis i nginx. Serwer http uruchamiamy poprzez skrypt app.py.

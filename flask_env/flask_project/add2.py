@@ -8,8 +8,8 @@ import create
 
 def add_user():#username, md5):
 	
-	#print request.json
-	json=request.json
+	
+	json = request.get_json(force=True)
 	
 	user = create.User(json["username"],json["password"])
 
@@ -28,7 +28,7 @@ def list_users():
 def add_file():#filename, year, month, day, version, size, username):
 
 	
-	json=request.json
+	json = request.get_json(force=True)
 
 	user = create.User.query.filter_by(login=json["username"]).first()
 	file = create.File(json["filename"], datetime.datetime.now(), json["version"], json["size"], user)
