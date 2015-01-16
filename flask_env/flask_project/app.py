@@ -3,18 +3,21 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from add2 import add_file
 from add2 import add_user
 from add2 import list_users
+from add2 import list_files
 from security import login
 from lib import csred
 
 from create import db
 
 app = Flask(__name__)
+#app.config['SERVER_NAME']='192.168.18.119:5000'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///CS.db'
 
 app.route('/addfile',methods=["POST"])(add_file)
 app.route('/adduser',methods=["POST"])(add_user)
 app.route('/login',methods=["POST"])(login)
 app.route('/list_users')(list_users)
+app.route('/list_files',methods=["POST"])(list_files)
 
 ###########################
 @app.route('/')
@@ -24,7 +27,7 @@ def index():
 
 @app.route('/data')
 def names():
-    data = {"names": ["John", "Jacob", "Julie", "Jennifer"]}
+    data = {"names": ["Johnson", "Jacob", "Julie", "Jennifer"]}
     return jsonify(data)
 
 @app.route('/haslo')
@@ -44,4 +47,4 @@ def cokolwiek():
 db.init_app(app)
 
 if __name__=="__main__":
-	app.run(debug=True)
+	app.run(host='0.0.0.0', debug=True)

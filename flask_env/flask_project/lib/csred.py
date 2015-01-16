@@ -36,6 +36,14 @@ def session_id(login, r=redis.Redis('localhost')):
 		r.expire(login, (maxtime_session))
 		return int(r.hget(login, 'session_id'))
 
+def get_SID(login, r=redis.Redis('localhost')):
+	login=login.lower()
+	if r.hexists(login, 'session_id'):
+		r.expire(login, (maxtime_session))
+		return int(r.hget(login, 'session_id'))
+	else:
+		return -1
+
 def chktoken(login, r=redis.Redis('localhost')):
 	login=login.lower()
 	file=file.lower()

@@ -2,16 +2,18 @@ from flask import Flask
 from flask import request
 from flask import jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
+from security import createmd5
 import datetime
 import time
 import create
+from lib import csred
 
 def add_user():#username, md5):
 	
 	
 	json = request.get_json(force=True)
-	
-	user = create.User(json["username"],json["password"])
+	md5=createmd5(json["password"])
+	user = create.User(json["username"],md5)#json["password"])
 
 	create.db.session.add(user)
 	try:
@@ -19,19 +21,75 @@ def add_user():#username, md5):
 		return jsonify({"Status":"OK"})
 	except:
 		print "ERROR:Cannot commit changes. Mayby user already exists?"
-		return jsonify({"Status":"ERROR"})
+		return jsonify({"Status":"ERROR","ID":"-1"})
+
+
+
+
 
 def list_users():
 	list=create.User.query.all()
 	return str(e.login for e in list)
 
+
+
+
+
+def list_files():
+	json = request.get_json(force=True)
+	user = create.User.query.filter_by(login=json["username"]).first().id
+	files=create.File.query.filter_by(user_id=user).all()
+	#print files
+	i=1
+	for row in files:
+		print row.name
+		if i==1:
+			list=row.name
+		else:
+			list+=" "+row.name
+		i+=1
+	print list
+	return jsonify({"list":list})
+#SID checkout
+'''
+	try:
+		if json["SID"]!=csred.get_SID(json["username"]):
+			print "Bad SID"
+			return jsonify({"Status":"ERROR","ID":"-2"})
+	except:
+		print "R base error."
+		return jsonify({"Status":"ERROR","ID":"-3"})
+'''
+#SID checkout positive
+	
+
+
+
+
+
+
 def add_file():#filename, year, month, day, version, size, username):
 
 	
 	json = request.get_json(force=True)
-
+	print json["username"] + " " + json["filename"] + " " + json["size"]
+#SID checkout
+	try:
+		if json["SID"]!=csred.get_SID(json["username"]):
+			print "Bad SID"
+			return jsonify({"Status":"ERROR","ID":"-2"})
+	except:
+		print "R base error."
+		return jsonify({"Status":"ERROR","ID":"-3"})
+#SID checkout positive
 	user = create.User.query.filter_by(login=json["username"]).first()
-	file = create.File(json["filename"], datetime.datetime.now(), json["version"], json["size"], user)
+	ver=1
+	try:
+		oldfile = create.User.query.filter_by(filename=json["filename"], username=json["username"]).first()
+		ver+=oldfile.version
+	except:
+		print "creating new file..."
+	file = create.File(json["filename"], datetime.datetime.now(), ver, json["size"], user)
 
 	create.db.session.add(file)
 	try:
@@ -39,4 +97,4 @@ def add_file():#filename, year, month, day, version, size, username):
 		return jsonify({"Status":"OK"})
 	except:
 		print "ERROR:Cannot commit changes. Mayby file already exists?"
-		return jsonify({"Status":"ERROR"})
+		return jsonify({"Status":"ERROR","ID":"-1"})
