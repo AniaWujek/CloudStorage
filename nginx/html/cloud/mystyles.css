@@ -39,3 +39,31 @@
     margin-left: auto;
     margin-right: auto;
 }
+
+.hello {
+	font-family: monospace;
+	font-size: 20px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 250px;
+	height: 40px;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.list-title {
+	font-family: monospace;
+	font-size: 12px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 250px;
+	height: 40px;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.my-table, th, td, tr {
+	.width: 200px;
+	.margin-left: auto;
+	.margin-right: auto;
+}
