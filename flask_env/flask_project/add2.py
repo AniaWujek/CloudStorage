@@ -42,14 +42,20 @@ def list_files():
 	#print files
 	i=1
 	for row in files:
-		print row.name
+		print row.size
 		if i==1:
-			list=row.name
+			names=str(row.name)
+			sizes=str(row.size)
+			edit_dates=str(row.edit_date)
+			versions=str(row.version)
 		else:
-			list+=" "+row.name
+			names+=" "+str(row.name)
+			sizes+=" "+str(row.size)
+			edit_dates+=" "+str(row.edit_date)
+			versions+=" "+str(row.version)
 		i+=1
 	print list
-	return jsonify({"list":list})
+	return jsonify({"names":names,"sizes":sizes,"edit_dates":edit_dates,"versions":versions})
 #SID checkout
 '''
 	try:
