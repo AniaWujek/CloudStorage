@@ -32,7 +32,26 @@ def login():
 
 	print 'login '+login
 	print 'haslo '+haslo
-	return 'zalogowano'
+	return jsonify({"status": "OK"})
+	
+@app.route('/signup', methods=['POST'])
+def signup():
+	data = request.get_json(force=True)
+	login = data["username"]
+	haslo = data["password"]
+	email = data["email"]
+
+	print 'login '+login
+	print 'haslo '+haslo
+	print 'email '+email
+	return jsonify({"status": "OK"})
+	
+@app.route('/list', methods=['POST'])
+def list():
+	data = request.get_json(force=True)
+	login = data["username"]
+	data = {"file1":"notporn.avi", "file2": "notporn2.jpg", "file3": "notporn3.bmp"}
+	return jsonify(data)
 
 if __name__ == '__main__':
     app.run(debug=True)
