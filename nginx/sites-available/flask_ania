@@ -31,9 +31,9 @@ server {
 		
     }
     
-    location /cloud {
+    location /c {
         
-        alias /etc/nginx/html/cloud;
+        alias /etc/nginx/html/cloud/;
         }
         
         
