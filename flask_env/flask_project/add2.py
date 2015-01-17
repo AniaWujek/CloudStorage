@@ -35,6 +35,7 @@ def list_users():
 
 
 
+
 def list_files():
 	json = request.get_json(force=True)
 	user = create.User.query.filter_by(login=json["username"]).first().id
@@ -49,13 +50,13 @@ def list_files():
 			edit_dates=str(row.edit_date)
 			versions=str(row.version)
 		else:
-			names+=" "+str(row.name)
-			sizes+=" "+str(row.size)
-			edit_dates+=" "+str(row.edit_date)
-			versions+=" "+str(row.version)
+			names+=";"+str(row.name)
+			sizes+=";"+str(row.size)
+			edit_dates+=";"+str(row.edit_date)
+			versions+=";"+str(row.version)
 		i+=1
 	print list
-	return jsonify({"names":names,"sizes":sizes,"edit_dates":edit_dates,"versions":versions})
+	return jsonify({"Status":"OK","names":names,"sizes":sizes,"edit_dates":edit_dates,"versions":versions})
 #SID checkout
 '''
 	try:
@@ -74,14 +75,18 @@ def list_files():
 
 
 
+
+
 def add_file():#filename, year, month, day, version, size, username):
 
 	
 	json = request.get_json(force=True)
-	print json["username"] + " " + json["filename"] + " " + json["size"]
+	print json["username"] + " " + json["filename"] + " " + json["size"]  + " " +json["SID"]
 #SID checkout
+
+	print csred.get_SID(json["username"])
 	try:
-		if json["SID"]!=csred.get_SID(json["username"]):
+		if str(json["SID"]) != str(csred.get_SID(json["username"])):
 			print "Bad SID"
 			return jsonify({"Status":"ERROR","ID":"-2"})
 	except:
@@ -104,3 +109,4 @@ def add_file():#filename, year, month, day, version, size, username):
 	except:
 		print "ERROR:Cannot commit changes. Mayby file already exists?"
 		return jsonify({"Status":"ERROR","ID":"-1"})
+

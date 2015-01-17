@@ -40,7 +40,7 @@ def get_SID(login, r=redis.Redis('localhost')):
 	login=login.lower()
 	if r.hexists(login, 'session_id'):
 		r.expire(login, (maxtime_session))
-		return int(r.hget(login, 'session_id'))
+		return r.hget(login, 'session_id')
 	else:
 		return -1
 
@@ -76,3 +76,11 @@ def progress(login, file, progress='-1', r=redis.Redis('localhost')):
 	else:
 		return -1
 
+
+def logout(login, r=redis.Redis('localhost')):
+	login=login.lower()
+	if r.hexists(login, 'session_id'):
+		r.delete(login)
+		return True
+	else:
+		return False

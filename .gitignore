@@ -30,3 +30,4 @@
 *~
 /flask_env/env
 *.pyc
+*.rdb

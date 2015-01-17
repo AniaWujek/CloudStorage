@@ -4,9 +4,7 @@ apt-get install python-dev libffi-dev
 apt-get install virtualenvwrapper
 
 export WORKON_HOME=$HOME/.virtualenvs
-export PROJECT_HOME=$HOME/Devel
-export PIP_RESPECT_VIRTUALENV=true
-
+export MSYS_HOME=/c/msys/1.0
 source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 
 #mkvirtualenv CS
