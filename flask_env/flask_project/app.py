@@ -4,6 +4,7 @@ from add2 import add_file
 from add2 import add_user
 from add2 import list_users
 from add2 import list_files
+from security import logout
 from security import login
 from lib import csred
 
@@ -18,6 +19,7 @@ app.route('/adduser',methods=["POST"])(add_user)
 app.route('/login',methods=["POST"])(login)
 app.route('/list_users')(list_users)
 app.route('/list_files',methods=["POST"])(list_files)
+app.route('/logout',methods=["POST"])(logout)
 
 ###########################
 @app.route('/')
