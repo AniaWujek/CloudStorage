@@ -18,12 +18,12 @@ def token(login, file, r=redis.Redis('localhost')):
 	info=login+':'+file
 	if r.hexists(info, 'token'):
 		r.expire(info, (maxtime_token))
-		return [0,int(r.hget(info, 'token'))]
+		return [1,int(r.hget(info, 'token'))]
 	else:
 		token=random.randint(0,sys.maxint)
 		r.hset(info, 'token', token)
 		r.expire(info, (maxtime_token))
-		return [1,int(r.hget(info, 'token'))]
+		return [0,int(r.hget(info, 'token'))]
 
 def session_id(login, r=redis.Redis('localhost')):
 	login=login.lower()
