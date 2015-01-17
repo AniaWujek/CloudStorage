@@ -7,7 +7,7 @@ db = SQLAlchemy()
 class User(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	login = db.Column(db.String(80), unique=True)
-	md5 = db.Column(db.String(120), unique=True)
+	md5 = db.Column(db.String(120))
 
 	def __init__(self, login, md5):
 		self.login = login
@@ -27,7 +27,7 @@ class File(db.Model):
 	user = db.relationship('User',
 		backref=db.backref('files', lazy='dynamic'))
 
-	__table_args__ = (UniqueConstraint('name', 'user_id', name='_name_user_uc'),)
+	__table_args__ = (UniqueConstraint('name', 'user_id', 'version', name='_name_user_version_uc'),)
 
 	def __init__(self, name, edit_date, version, size, user):
 		self.name = name

@@ -31,3 +31,5 @@
 /flask_env/env
 *.pyc
 *.rdb
+
+/websocket (testy)/node_modules
