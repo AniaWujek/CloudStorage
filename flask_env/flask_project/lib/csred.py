@@ -12,10 +12,10 @@ def init():
 	return r
 
 
-def token(login, file, r=redis.Redis('localhost')):
+def token(login, file, version, r=redis.Redis('localhost')):
 	login=login.lower()
 	file=file.lower()
-	info=login+':'+file
+	info=login+':'+file+':'+str(version)
 	if r.hexists(info, 'token'):
 		r.expire(info, (maxtime_token))
 		return [1,int(r.hget(info, 'token'))]
@@ -24,6 +24,16 @@ def token(login, file, r=redis.Redis('localhost')):
 		r.hset(info, 'token', token)
 		r.expire(info, (maxtime_token))
 		return [0,int(r.hget(info, 'token'))]
+
+def chktoken(login, version, r=redis.Redis('localhost')):
+	login=login.lower()
+	file=file.lower()
+	info=login+':'+file+':'+str(version)
+	if r.hexists(info, 'token'):
+		r.expire(info, (maxtime_token))
+		return int(r.hget(info, 'token'))
+	else:
+		return -1
 
 def session_id(login, r=redis.Redis('localhost')):
 	login=login.lower()
@@ -44,15 +54,6 @@ def get_SID(login, r=redis.Redis('localhost')):
 	else:
 		return -1
 
-def chktoken(login, r=redis.Redis('localhost')):
-	login=login.lower()
-	file=file.lower()
-	info=login+':'+file
-	if r.hexists(info, 'token'):
-		r.expire(info, (maxtime_token))
-		return int(r.hget(info, 'token'))
-	else:
-		return -1
 
 def status(login, file, status='ERROR', r=redis.Redis('localhost')):
 	login=login.lower()
