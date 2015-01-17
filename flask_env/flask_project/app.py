@@ -30,7 +30,7 @@ def index():
 @app.route('/data')
 def names():
     data = {"names": ["Johnson", "Jacob", "Julie", "Jennifer"]}
-    return jsonify(data)
+    return jsonify(data), 200
 
 @app.route('/haslo')
 def hasla():
