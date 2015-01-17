@@ -10,13 +10,13 @@ var redis = require("redis"),
 	var username = "tstuser"
 	var filename = "tstfile.mp3"
 	var version = "1"
-/*
+
 	//TESTOWE DANE
 	client.hset(username, "session_id", 1500100900, redis.print);
-	client.hset(username+":"+filename+":"+version, "token", 1500100900, redis.print);
+	client.hset(username+":"+filename+":"+version, "token", 15001009002, redis.print);
 	client.expire(username, maxtime_sid)
 	client.expire(username+":"+filename+":"+version, maxtime_token)
-*/
+	//KONIEC DANYCH TESTOWYCH
 
 
 	//sprawdzenie id sesji
@@ -35,7 +35,11 @@ var redis = require("redis"),
 	console.log(client.expire(username, maxtime_sid))
 	//przedłużenie tokena dla użytkownika
 	client.expire(username+":"+filename+":"+version, maxtime_sid)
-	client.quit();
 	//usuniecie tokenu po transmisji
-	client..delete(username+":"+filename+":"+version)
+	client.del(username+":"+filename+":"+version)
+	client.hexists(username+":"+filename+":"+version,"token", function (err, obj){
+		console.dir(obj);
+	});
+	client.del(username)
+	client.quit();
 //
