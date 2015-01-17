@@ -96,8 +96,11 @@ def add_file():#filename, year, month, day, version, size, username):
 	user = create.User.query.filter_by(login=json["username"]).first()
 	ver=1
 	try:
-		oldfile = create.User.query.filter_by(filename=json["filename"], username=json["username"]).first()
-		ver+=oldfile.version
+		oldfile = create.File.query.filter_by(name=json["filename"]).all()
+		for row in oldfile:
+			if row.version>(ver-1):
+				ver=row.version+1
+		
 	except:
 		print "creating new file..."
 	file = create.File(json["filename"], datetime.datetime.now(), ver, json["size"], user)

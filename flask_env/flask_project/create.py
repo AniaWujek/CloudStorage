@@ -26,8 +26,8 @@ class File(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	user = db.relationship('User',
 		backref=db.backref('files', lazy='dynamic'))
-
-	__table_args__ = (UniqueConstraint('name', 'user_id', 'version', name='_name_user_version_uc'),)
+	#unique constraints - uncomment for saving only one file per user
+	#__table_args__ = (UniqueConstraint('name', 'user_id', 'version', name='_name_user_version_uc'),)
 
 	def __init__(self, name, edit_date, version, size, user):
 		self.name = name

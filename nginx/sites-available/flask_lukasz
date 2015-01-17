@@ -1,12 +1,11 @@
 server {
-	listen 192.168.18.119:8000;
+	listen 10.100.4.111:8000;
 	listen 127.0.0.1:8000;
 
 
 	
     location / {
-        add_header Access-Control-Allow-Origin *;
-        proxy_pass http://127.0.0.1:5000;
+        proxy_pass http://localhost:5000;
          
     }
     
@@ -14,7 +13,7 @@ server {
     
     location /data {
         
-        alias  /home/thorus/studia/projetkTIN/CloudStorage/flask_env/flask_project/static/;
+        alias  /home/anna/CloudStorage/flask_env/flask_project/static/;
 
 			location /data/nowe {
 			
@@ -32,9 +31,9 @@ server {
 		
     }
     
-    location /cloud {
+    location /c {
         
-        alias /etc/nginx/html/cloud;
+        alias /etc/nginx/html/cloud/;
         }
         
         
