@@ -6,12 +6,12 @@ maxtime_token = 30*60
 maxtime_status = 30*60
 maxtime_progress = 30*60
 maxtime_session = 30*60
-
+#Tworzy baze redisa, jesli bylaby potrzebna do sterowania recznego
 def init():
 	r=redis.Redis('localhost')
 	return r
 
-
+#zwraca token albo tworzy go, lezy pod user:filename:version
 def token(login, file, version, r=redis.Redis('localhost')):
 	login=login.lower()
 	file=file.lower()
@@ -55,10 +55,10 @@ def get_SID(login, r=redis.Redis('localhost')):
 		return -1
 
 
-def status(login, file, status='ERROR', r=redis.Redis('localhost')):
+def status(login, file, version, status='ERROR', r=redis.Redis('localhost')):
 	login=login.lower()
 	file=file.lower()
-	info=login+':'+file
+	info=login+':'+file+':'+str(version)
 	if r.hexists(info, 'token'):
 		r.hset(info, 'status', status)
 		r.expire(info, (maxtime_status))
@@ -66,10 +66,10 @@ def status(login, file, status='ERROR', r=redis.Redis('localhost')):
 	else:
 		return -1
 
-def progress(login, file, progress='-1', r=redis.Redis('localhost')):
+def progress(login, file, version, progress='-1', r=redis.Redis('localhost')):
 	login=login.lower()
 	file=file.lower()
-	info=login+':'+file
+	info=login+':'+file+':'+str(version)
 	if r.hexists(info, 'token'):
 		r.hset(info, 'progress', progress)
 		r.expire(info, (maxtime_progress))
@@ -78,9 +78,9 @@ def progress(login, file, progress='-1', r=redis.Redis('localhost')):
 		return -1
 
 
-def logout(login, r=redis.Redis('localhost')):
+def logout(login, sid, r=redis.Redis('localhost')):
 	login=login.lower()
-	if r.hexists(login, 'session_id'):
+	if r.hexists(login, 'session_id') & (r.hget(login, 'session_id')==sid):
 		r.delete(login)
 		return True
 	else:

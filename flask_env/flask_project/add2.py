@@ -14,14 +14,14 @@ def add_user():#username, md5):
 	json = request.get_json(force=True)
 	md5=createmd5(json["password"])
 	user = create.User(json["username"],md5)#json["password"])
-
+	print "Adding user " + json["username"] + " " + json["password"]
 	create.db.session.add(user)
 	try:
 		create.db.session.commit()
 		return jsonify({"Status":"OK"})
 	except:
 		print "ERROR:Cannot commit changes. Mayby user already exists?"
-		return jsonify({"Status":"ERROR","ID":"-1"})
+		return jsonify({"Status":"ERROR","ID":"-1"}),409
 
 
 
@@ -40,14 +40,14 @@ def list_files():
 	json = request.get_json(force=True)
 	#SID checkout
 
-	print csred.get_SID(json["username"])
+	print "List files " + csred.get_SID(json["username"])
 	try:
 		if str(json["SID"]) != str(csred.get_SID(json["username"])):
 			print "Bad SID"
-			return jsonify({"Status":"ERROR","ID":"-2"})
+			return jsonify({"Status":"ERROR","ID":"-2"}),401
 	except:
 		print "R base error."
-		return jsonify({"Status":"ERROR","ID":"-3"})
+		return jsonify({"Status":"ERROR","ID":"-3"}),500
 #SID checkout positive
 
 	user = create.User.query.filter_by(login=json["username"]).first().id
@@ -81,22 +81,22 @@ def list_files():
 def add_file():#filename, year, month, day, version, size, username):
 
 	json = request.get_json(force=True)
-	print json["username"] + " " + json["filename"] + " " + json["size"]  + " " +json["SID"]
+	print "Add file " + json["username"] + " " + json["filename"] + " " + json["size"]  + " " +json["SID"]
 #SID checkout
 
 	print csred.get_SID(json["username"])
 	try:
 		if str(json["SID"]) != str(csred.get_SID(json["username"])):
 			print "Bad SID"
-			return jsonify({"Status":"ERROR","ID":"-2"})
+			return jsonify({"Status":"ERROR","ID":"-2"}),401
 	except:
 		print "R base error."
-		return jsonify({"Status":"ERROR","ID":"-3"})
+		return jsonify({"Status":"ERROR","ID":"-3"}),500
 #SID checkout positive
 	user = create.User.query.filter_by(login=json["username"]).first()
 	ver=1
 	try:
-		oldfile = create.File.query.filter_by(name=json["filename"]).all()
+		oldfile = create.File.query.filter_by(name=json["filename"], user=user).all()
 		for row in oldfile:
 			if row.version>(ver-1):
 				ver=row.version+1
@@ -113,7 +113,7 @@ def add_file():#filename, year, month, day, version, size, username):
 		return jsonify({"Status":"OK","Token":token[1],"Existed":token[0]})
 	except:
 		print "ERROR:Cannot commit changes. Mayby file already exists?"
-		return jsonify({"Status":"ERROR","ID":"-1"})
+		return jsonify({"Status":"ERROR","ID":"-1"}),409
 
 
 
@@ -122,30 +122,29 @@ def add_file():#filename, year, month, day, version, size, username):
 def delete_file():#filename, year, month, day, version, size, username):
 
 	json = request.get_json(force=True)
-	print json["username"] + " " + json["filename"] + " " + json["size"]  + " " +json["SID"]
+	print "Remove file " + json["username"] + " " + json["filename"] + " " +json["SID"] + " " + json["version"] 
 #SID checkout
 
 	print csred.get_SID(json["username"])
 	try:
 		if str(json["SID"]) != str(csred.get_SID(json["username"])):
 			print "Bad SID"
-			return jsonify({"Status":"ERROR","ID":"-2"})
+			return jsonify({"Status":"ERROR","ID":"-2"}),401
 	except:
 		print "R base error."
-		return jsonify({"Status":"ERROR","ID":"-3"})
+		return jsonify({"Status":"ERROR","ID":"-3"}),500
 #SID checkout positive
 	user = create.User.query.filter_by(login=json["username"]).first()
-	ver=1
 	try:
-		oldfile = create.User.query.filter_by(filename=json["filename"], username=json["username"]).first()
+		oldfile = create.File.query.filter_by(name=json["filename"],version=json["version"],user=user).first()
 	except:
 		print "No such file"
-		return jsonify({"Status":"ERROR","ID":"-2"})
+		return jsonify({"Status":"ERROR","ID":"-2"}),410
 
 	create.db.session.delete(oldfile)
 	try:
 		create.db.session.commit()
 		return jsonify({"Status":"OK"})
 	except:
-		print "ERROR:Cannot commit changes. Mayby file already exists?"
-		return jsonify({"Status":"ERROR","ID":"-1"})
+		print "ERROR:Cannot commit changes. Mayby file doesn't exist any more?"
+		return jsonify({"Status":"ERROR","ID":"-1"}),409
