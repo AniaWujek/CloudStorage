@@ -18,14 +18,16 @@ function list () {
 				$('#versions').text(versions); 
 				$('#edit_dates').text(edit_dates);  
 				
-				var table_body = "<table class=\"table\"><thead>";				
+				var table_body = "<table class=\"table\" data-click-to-select=\"true\"><thead>";				
 				
-				table_body += "<thead><tr><th>#</th><th>File name</th><th>Size</th><th>Version</th><th>Edit date</th></tr></thead>";
+				table_body += "<thead><tr><th>#</th><th>File name</th><th>Size</th><th>Version</th><th>Edit date</th><th>Action</th></tr></thead>";
 				
-				for(i = 0; i < names.length; i++) {
+						
+				
+				 for(i = 0; i < names.length; i++) {
 					
 					table_body += "<tbody><tr><td>";
-					table_body += i;			
+					table_body += i+1;			
 					table_body += "</td><td>";
 					table_body += names[i];			
 					table_body += "</td><td>";
@@ -34,22 +36,39 @@ function list () {
 					table_body += versions[i];			
 					table_body += "</td><td>";
 					table_body += edit_dates[i];			
-					table_body += "</td></td></tr></tbody>";	
+					table_body += "</td><td>";
+					table_body += "<a class=\"btn\" style=\"font-color: red;\">Download<\a><a class=\"btn\" onclick=\"deletefile('";
+					table_body += names[i];
+					table_body += "', '";
+					table_body += versions[i];
+					table_body += "')\">Delete<\a></td></tr></tbody>";	
 				}
-			
+				
 				$('#table_body').html(table_body); 
+				
+				
+				
+				
+				 
 				        
         }   
     })
+    .fail(function () {
+			
+					var table_body = "<table class=\"table\" data-click-to-select=\"true\"><thead>";					
+				table_body += "<thead><tr><th>#</th><th>File name</th><th>Size</th><th>Version</th><th>Edit date</th><th>Action</th></tr></thead>";
+					table_body += "<tbody><tr><td>";						
+					table_body += "</td><td>";							
+					table_body += "</td><td>";						
+					table_body += "</td><td>";							
+					table_body += "</td><td>";						
+					table_body += "</td><td></td></tr></tbody>";	
+					$('#table_body').html(table_body); 		
+						
+				    
+    })
 	
-	//$.post(nginx_url, datadata, function(data,status) {
-  //      var tbl_body = "<table data-toggle=\"table\" data-height'\"299\" class=\"table\"><thead>";
-  //      $.each(data, function (idx, obj) {
-	//			tbl_body += "<tr class=\"success\"><th>"+obj+"</th></tr>"      
-  ////      })
-  //      tbl_body += "<thead></table>";
-	//		$("#table_body").html(tbl_body);
-	//		})		        
+	        
 }
 
 function getCookie(cname) {
@@ -71,25 +90,85 @@ function addfile() {
 	var login = getCookie("username");
 	var sessionid = getCookie("sessionid");
 	var file = getFile();
-	var datadata = JSON.stringify({"username": login, "filename": "plik3.ppp", "size": "1555", "SID": sessionid});
+	var datadata = JSON.stringify({"username": login, "filename": file, "size": "1555", "SID": sessionid});
 	$.post(nginx_url, datadata, function(data,status) {
         if (data.Status == "OK") {
-				 document.cookie="addtoken=" + data.Token;       
+				 document.cookie="addtoken=" + data.Token;   
+				 window.location.reload();     
         }   
     })
 }
 
 function getFile() {
+	//var fullPath = (document.getElementById('myFile').value).toString();
 	var fullPath = document.getElementById('myFile').value;
-
+	if (fullPath) {
+		var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+		var filename = fullPath.substring(startIndex);
+		if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+			filename = filename.substring(1);
+		}
+	
+}
 	
 
-	return fullPath;
-}
-    
-function logout() {
-	var nginx_url = "/login";
-	var login = getCookie("username");
+	return filename;
 }
 
+function deletefile(name, version) {
+	var nginx_url = "/deletefile";
+	var login = getCookie("username");
+	var sessionid = getCookie("sessionid");
+	
+	var datadata = JSON.stringify({"username": login, "SID": sessionid, "filename": name, "version": version}); 	
+	
+	$.post(nginx_url, datadata, function(data,status) {
+        if (data.Status == "OK") {
+				 window.location.reload();       
+        }   
+    })
+
+}
+
+function deleteuser(name, version) {
+	var nginx_url = "/deleteuser";
+	var login = getCookie("username");
+	var sessionid = getCookie("sessionid");
+	
+	var datadata = JSON.stringify({"username": login, "SID": sessionid}); 	
+	
+	$.post(nginx_url, datadata, function(data,status) {
+        if (data.Status == "OK") {
+				 window.location.replace("../");       
+        }   
+    })
+
+}
+
+function del_cookie(name) {
+    document.cookie = name +
+    '=; expires=Thu, 01-Jan-70 00:00:01 GMT;';
+    }
+    
+function logout() {
+	var nginx_url = "/logout";
+	var login = getCookie("username");
+	var sessionid = getCookie("sessionid");
+	
+	var datadata = JSON.stringify({"username": login, "SID": sessionid}); 	
+	
+	$.post(nginx_url, datadata, function(data,status) {
+        if (data.Status == "OK") {
+				 del_cookie("sessionid");
+					del_cookie("login"); 
+					window.location.replace("../");       
+        }   
+    })
+	 
+	
+}
+
+
+
 list();
+

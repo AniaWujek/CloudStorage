@@ -1,37 +1,19 @@
 server {
-	listen 192.168.18.100:8000;
+	listen 192.168.189.47:8000;
 	listen 127.0.0.1:8000;
 
 
 	
     location / {
-        proxy_pass http://192.168.18.119:5000;
+        proxy_pass http://192.168.189.28:5000;
          
     }
     
     
     
-    location /data {
-        
-        alias  /home/anna/CloudStorage/flask_env/flask_project/static/;
-
-			location /data/nowe {
-			
-			alias /etc/nginx/html/;
-		} 
-			location /data/data {
-			
-			alias /etc/nginx/html/data;
-			}
-			
-			location /data/chat {
-			
-			alias /etc/nginx/html/chat;
-			}
-		
-    }
     
-    location /c {
+    
+    location /storage {
         
         alias /etc/nginx/html/cloud/;
         }

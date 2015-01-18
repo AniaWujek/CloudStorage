@@ -1,3 +1,5 @@
+
+
 .table-style {
 	width: 500px;
 }
@@ -109,3 +111,7 @@
     display: block;
 }
  
+ 
+.button-option {
+	.font-family: monospace;
+}

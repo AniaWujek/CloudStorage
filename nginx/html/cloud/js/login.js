@@ -20,7 +20,8 @@ function login() {
 				var top = 100;
 				var left = 100;
 				
-				window.open("./main", "", 'toolbar=1, location=no, directories=no, status=1, menubar=1, scrollbars=1, resizable=1, copyhistory=1, width='+w+', height='+h+', top='+top+', left='+left);				
+				//window.open("./main", "", 'toolbar=1, location=no, directories=no, status=1, menubar=1, scrollbars=1, resizable=1, copyhistory=1, width='+w+', height='+h+', top='+top+', left='+left);		
+				window.location.replace("./main");		
 				
 				
         }
@@ -36,33 +37,53 @@ function login() {
         
     })
     .fail(function () {
-			    $('#error-info').text("Baza nie chodzi!"); 
+    			if (data.ID == "-3")
+					$('#error-info').text("Nie ma takiego użytkownika!"); 
+				else if (data.ID == "-2")
+					$('#error-info').text("Błąd przy tworzeniu sesji!");
+				else if (data.ID == "-1")
+					$('#error-info').text("Błędne hasło!");  
+			    else $('#error-info').text("Baza nie chodzi!"); 
     });
     
     
 }
 
-
+function getCookie(cname) {
+	var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1);
+        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+    }
+    return "";
+	
+}
 
 
 function signup() {
 	//window.location.href = "./signup";
-	window.open("./signup", "", "width=50%, height=100%");   
+	window.location.replace("./signup", "", "width=50%, height=100%");   
 
 }
 
-function send_signup () {
-	var nginx_url = "/adduser";
-	var login = $('#slogin').val();
-	var password = $('#spassword').val();
+
+function checkSID() {
+	var nginx_url = "/check_sid";
+	var sessionid = getCookie("sessionid");
+	var login = getCookie("username");
 	
-	var datadata = JSON.stringify({"username": login, "password": password});
-	$.post(nginx_url, datadata, function(data,status) {
+	if (sessionid != "" && login != "") {
+		var datadata = JSON.stringify({"username": login, "SID": sessionid});
+		$.post(nginx_url, datadata, function(data,status) {
         if (data.Status == "OK") {
-				        
+				 window.location.replace("./main");     
         }   
     })
+	}
 }
 
+checkSID();
 
 
