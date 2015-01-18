@@ -50,8 +50,10 @@ def delete_user():#filename, year, month, day, version, size, username):
 	csred.logout(json["username"],json["SID"])
 	user = create.User.query.filter_by(login=json["username"]).first()
 	try:
-		oldfile = create.File.query.filter_by(name=json["filename"], user_id=user.id).all()
-		create.db.session.delete(oldfile)
+		oldfile = create.File.query.filter_by(user_id=user.id).all()
+		for row in oldfile:
+			create.db.session.delete(row)
+			create.db.session.commit()
 	except:
 		print "Error choosing files."
 	create.db.session.delete(user)
