@@ -3,6 +3,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from add2 import add_file
 from add2 import delete_file
 from add2 import add_user
+from add2 import delete_user
 from add2 import list_users
 from add2 import list_files
 from security import logout
@@ -19,6 +20,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///CS.db'
 app.route('/addfile',methods=["POST"])(add_file)
 app.route('/deletefile',methods=["POST"])(delete_file)
 app.route('/adduser',methods=["POST"])(add_user)
+app.route('/deleteuser',methods=["POST"])(delete_user)
 app.route('/login',methods=["POST"])(login)
 app.route('/check_sid',methods=["POST"])(check_sid)
 app.route('/list_users')(list_users)

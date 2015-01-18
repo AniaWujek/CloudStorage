@@ -10,6 +10,7 @@ maxtime_session = 30*60
 def init():
 	r=redis.Redis('localhost')
 	return r
+##############################################################
 
 #zwraca token albo tworzy go, lezy pod user:filename:version
 def token(login, file, version, r=redis.Redis('localhost')):
@@ -24,6 +25,7 @@ def token(login, file, version, r=redis.Redis('localhost')):
 		r.hset(info, 'token', token)
 		r.expire(info, (maxtime_token))
 		return [0,int(r.hget(info, 'token'))]
+##############################################################
 
 def chktoken(login, version, r=redis.Redis('localhost')):
 	login=login.lower()
@@ -34,6 +36,7 @@ def chktoken(login, version, r=redis.Redis('localhost')):
 		return int(r.hget(info, 'token'))
 	else:
 		return -1
+##############################################################
 
 def session_id(login, r=redis.Redis('localhost')):
 	login=login.lower()
@@ -53,6 +56,7 @@ def get_SID(login, r=redis.Redis('localhost')):
 		return r.hget(login, 'session_id')
 	else:
 		return -1
+##############################################################
 
 
 def status(login, file, version, status='ERROR', r=redis.Redis('localhost')):
@@ -76,6 +80,7 @@ def progress(login, file, version, progress='-1', r=redis.Redis('localhost')):
 		return int(r.hget(info, 'progress'))
 	else:
 		return -1
+##############################################################
 
 
 def logout(login, sid, r=redis.Redis('localhost')):

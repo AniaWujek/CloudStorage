@@ -35,14 +35,13 @@ def login():
 	else:
 		print "-1: Bad password."
 		return jsonify({"Status":"ERROR","ID":"-1"}),401
-
-
-
+##############################################################
 
 
 def createmd5(password):
 	hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
 	return hashed
+##############################################################
 
 
 	
@@ -59,17 +58,21 @@ def check_password(given,hashed):
 	else:
 		print("Salted checkout negative.")
 		return False
+##############################################################
 
 def check_sid():
 	json = request.get_json(force=True)
 	username = json["username"] 
 	sid = json["SID"]
-	print "checkin SID" + username + sid
+	print "checkin if SID is actual" + " " + username + " " + sid
 	correct = csred.get_SID(username)
 	if str(correct) == str(sid):
 		return jsonify({"Status":"OK"})
 	else:
 		return jsonify({"Status":"ERROR"}),410
+##############################################################
+
+
 
 def logout():
 	json = request.get_json(force=True)

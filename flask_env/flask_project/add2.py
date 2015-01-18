@@ -6,6 +6,7 @@ from security import createmd5
 import datetime
 import time
 import create
+from security import login
 from lib import csred
 
 def add_user():#username, md5):
@@ -18,6 +19,7 @@ def add_user():#username, md5):
 	create.db.session.add(user)
 	try:
 		create.db.session.commit()
+		#return login()
 		return jsonify({"Status":"OK"})
 	except:
 		print "ERROR:Cannot commit changes. Mayby user already exists?"
@@ -27,11 +29,50 @@ def add_user():#username, md5):
 
 
 
+##############################################################
+
+
+def delete_user():#filename, year, month, day, version, size, username):
+
+	json = request.get_json(force=True)
+	print "Remove user " + json["username"] + " " + json["SID"]
+#SID checkout
+
+	print csred.get_SID(json["username"])
+	try:
+		if str(json["SID"]) != str(csred.get_SID(json["username"])):
+			print "Bad SID"
+			return jsonify({"Status":"ERROR","ID":"-2"}),401
+	except:
+		print "R base error."
+		return jsonify({"Status":"ERROR","ID":"-3"}),500
+#SID checkout positive
+	csred.logout(json["username"],json["SID"])
+	user = create.User.query.filter_by(login=json["username"]).first()
+	try:
+		oldfile = create.File.query.filter_by(name=json["filename"], user_id=user.id).all()
+		create.db.session.delete(oldfile)
+	except:
+		print "Error choosing files."
+	create.db.session.delete(user)
+	try:
+		create.db.session.commit()
+		return jsonify({"Status":"OK"})
+	except:
+		print "ERROR:Cannot commit changes."
+		return jsonify({"Status":"ERROR","ID":"-1"}),409
+
+
+##############################################################
+
+
+
 def list_users():
 	list=create.User.query.all()
 	return str(e.login for e in list)
 
 
+##############################################################
 
 
 
@@ -40,7 +81,7 @@ def list_files():
 	json = request.get_json(force=True)
 	#SID checkout
 
-	print "List files " + csred.get_SID(json["username"])
+	print "Listing files "# + str(csred.get_SID(json["username"]))
 	try:
 		if str(json["SID"]) != str(csred.get_SID(json["username"])):
 			print "Bad SID"
@@ -72,6 +113,7 @@ def list_files():
 	
 
 
+##############################################################
 
 
 
@@ -81,7 +123,12 @@ def list_files():
 def add_file():#filename, year, month, day, version, size, username):
 
 	json = request.get_json(force=True)
-	print "Add file " + json["username"] + " " + json["filename"] + " " + json["size"]  + " " +json["SID"]
+	try:
+		print "Add file " + json["username"] + " " + json["filename"] + " " + json["size"]  + " " +json["SID"]
+	except:
+		print "Bad json data."
+		return jsonify({"Status":"ERROR","ID":"-4"}),406
+		
 #SID checkout
 
 	print csred.get_SID(json["username"])
@@ -115,7 +162,7 @@ def add_file():#filename, year, month, day, version, size, username):
 		print "ERROR:Cannot commit changes. Mayby file already exists?"
 		return jsonify({"Status":"ERROR","ID":"-1"}),409
 
-
+##############################################################
 
 
 
