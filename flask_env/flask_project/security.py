@@ -20,7 +20,7 @@ def login():
 		realpassword = user.md5
 	except:
 		print "-3: Bad login."
-		return jsonify({"Status":"ERROR","ID":"-3"})
+		return jsonify({"Status":"ERROR","ID":"-3"}),401
 	print user.login
 	print user.md5
 	if check_password(str(password),str(realpassword)):#str(password) == str(realpassword):
@@ -31,10 +31,10 @@ def login():
 			return jsonify({"Status":"OK","ID":str(tk)})
 		except:
 			print "-2: ERROR:Cannot create session id."
-			return jsonify({"Status":"ERROR","ID":"-2"})
+			return jsonify({"Status":"ERROR","ID":"-2"}),500
 	else:
 		print "-1: Bad password."
-		return jsonify({"Status":"ERROR","ID":"-1"})
+		return jsonify({"Status":"ERROR","ID":"-1"}),401
 
 
 
@@ -60,21 +60,33 @@ def check_password(given,hashed):
 		print("Salted checkout negative.")
 		return False
 
-
+def check_sid():
+	json = request.get_json(force=True)
+	username = json["username"] 
+	sid = json["SID"]
+	print "checkin SID" + username + sid
+	correct = csred.get_SID(username)
+	if str(correct) == str(sid):
+		return jsonify({"Status":"OK"})
+	else:
+		return jsonify({"Status":"ERROR"}),410
 
 def logout():
 	json = request.get_json(force=True)
-	print json["username"] + " " + json["SID"]
+	print "Logout " + json["username"] + " " + json["SID"]
+	print str(csred.get_SID(json["username"]))
 #SID checkout
+
+	print csred.get_SID(json["username"])
 	try:
-		if json["SID"]!=csred.get_SID(json["SID"]):
+		if str(json["SID"]) != str(csred.get_SID(json["username"])):
 			print "Bad SID"
-			return jsonify({"Status":"ERROR","ID":"-2"})
+			return jsonify({"Status":"ERROR","ID":"-2"}),401
 	except:
 		print "R base error."
-		return jsonify({"Status":"ERROR","ID":"-3"})
+		return jsonify({"Status":"ERROR","ID":"-3"}),500
 #SID checkout positive
-	if csred.logout():
+	if csred.logout(json["username"],json["SID"]):
 		return jsonify({"Status":"OK"})
 	else:
-		return jsonify({"Status":"ERROR","ID":"-1"})
+		return jsonify({"Status":"ERROR","ID":"-1"}),410

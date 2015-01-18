@@ -7,5 +7,5 @@ export WORKON_HOME=$HOME/.virtualenvs
 export MSYS_HOME=/c/msys/1.0
 source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 
-#mkvirtualenv CS
-#pip install -r req.txt
+mkvirtualenv CS
+pip install -r req.txt

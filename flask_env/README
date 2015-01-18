@@ -1,0 +1,13 @@
+To start services, you have to run:
+
+-make enabled=<nginx filename> in main folder
+
+-config.sh if you've not done this yet
+
+-activate your venv, if not yet activated (workon CS)
+
+-run redis-server
+
+-all_services_run.sh
+
+
