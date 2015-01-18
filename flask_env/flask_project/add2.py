@@ -159,7 +159,8 @@ def add_file():#filename, year, month, day, version, size, username):
 		create.db.session.commit()
 		print "FILE_TOKEN UNDER: " + str(json["username"]) + ":" + str(json["filename"]) + ":" + str(ver)
 		token = csred.token(json["username"],json["filename"],ver)
-		return jsonify({"Status":"OK","Token":token[1],"Existed":token[0],"Version":ver})
+		#print file.id
+		return jsonify({"Status":"OK","Token":token[1],"Existed":token[0],"Version":ver,"ID":file.id})
 	except:
 		print "ERROR:Cannot commit changes. Mayby file already exists?"
 		return jsonify({"Status":"ERROR","ID":"-1"}),409
