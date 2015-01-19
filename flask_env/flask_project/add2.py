@@ -125,7 +125,7 @@ def list_files():
 
 def delete_uploaded(username):#filename, year, month, day, version, size, username):
 
-	user = create.User.query.filter_by(login=json["username"]).first()
+	user = create.User.query.filter_by(login=username).first()
 	try:
 		oldfile = create.File.query.filter_by(user_id=user.id, upload=0).all()
 		for row in oldfile:
