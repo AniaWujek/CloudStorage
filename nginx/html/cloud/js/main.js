@@ -12,15 +12,17 @@ function list () {
         		var sizes = (data.sizes).split(';');
         		var versions = (data.versions).split(';');
 				var edit_dates = (data.edit_dates).split(';');
+				var uploads = (data.uploads).split(';');
 				
 				$('#names').text(names); 
 				$('#sizes').text(sizes); 
 				$('#versions').text(versions); 
 				$('#edit_dates').text(edit_dates);  
+				$('#uploads').text(uploads);  
 				
 				var table_body = "<table class=\"table\" data-click-to-select=\"true\"><thead>";				
 				
-				table_body += "<thead><tr><th>#</th><th>File name</th><th>Size</th><th>Version</th><th>Edit date</th><th>Action</th></tr></thead>";
+				table_body += "<thead><tr><th>#</th><th>File name</th><th>Size</th><th>Version</th><th>Edit date</th><th>Action</th><th>Status</th></tr></thead>";
 				
 						
 				
@@ -37,11 +39,18 @@ function list () {
 					table_body += "</td><td>";
 					table_body += edit_dates[i];			
 					table_body += "</td><td>";
-					table_body += "<a class=\"btn\" style=\"font-color: red;\">Download<\a><a class=\"btn\" onclick=\"deletefile('";
+					table_body += "<a class=\"btn\" onclick=\"fakeaddfile('";
 					table_body += names[i];
 					table_body += "', '";
 					table_body += versions[i];
-					table_body += "')\">Delete<\a></td></tr></tbody>";	
+					table_body += "')\">Download<\a>"
+					table_body += "<a class=\"btn\" onclick=\"deletefile('";
+					table_body += names[i];
+					table_body += "', '";
+					table_body += versions[i];
+					table_body += "')\">Delete<\a></td><td>";
+					table_body += uploads[i];
+					table_body += "</td></tr></tbody>";	
 				}
 				
 				$('#table_body').html(table_body); 
@@ -83,18 +92,74 @@ function getCookie(cname) {
 	
 }
 
-
-
-function addfile() {
-	var nginx_url = "/addfile";
+function getTokenDownload() {
+	var nginx_url = "/addtokendownload";
 	var login = getCookie("username");
 	var sessionid = getCookie("sessionid");
 	var file = getFile();
 	var datadata = JSON.stringify({"username": login, "filename": file, "size": "1555", "SID": sessionid});
 	$.post(nginx_url, datadata, function(data,status) {
         if (data.Status == "OK") {
+				 document.cookie="tokendownload=" + data.Token;  
+				 docuement.cookie="versionupload" + data.version;				  
+        }   
+    })
+}
+
+function getTokenUpload() {
+	var nginx_url = "/addtokenupload";
+	var login = getCookie("username");
+	var sessionid = getCookie("sessionid");
+	var file = getFile();
+	var datadata = JSON.stringify({"username": login, "filename": file, "size": "1555", "SID": sessionid});
+	$.post(nginx_url, datadata, function(data,status) {
+        if (data.Status == "OK") {
+				 document.cookie="tokenupload=" + data.Token;
+				 document.cookie="versionupload" + data.Version;	  
+				 document.cookie="ID" + data.ID;	  				  
+        }   
+    })
+}
+
+function upload() {
+	getTokenUpload();
+	//alert(getCookie("tokendownload"));
+	list();
+	
+}
+
+function download() {
+	getTokenDownload();
+}
+
+function addfile() {
+	var nginx_url = "/addfile";
+	var login = getCookie("username");
+	var sessionid = getCookie("sessionid");
+	var file = getFile();
+	var version = getCookie("versionupload");
+	var datadata = JSON.stringify({"username": login, "filename": file, "size": "1555", "SID": sessionid});
+	$.post(nginx_url, datadata, function(data,status) {
+        if (data.Status == "OK") {
 				 document.cookie="addtoken=" + data.Token;   
-				 window.location.reload();     
+				 //window.location.reload();  
+				 list();   
+        }   
+    })
+}
+
+function fakeaddfile(myfilename, version) {
+	var nginx_url = "/addfile";
+	var login = getCookie("username");
+	var sessionid = getCookie("sessionid");
+	var file = myfilename;
+	var version = version;
+	var datadata = JSON.stringify({"username": login, "filename": file, "size": "1555", "SID": sessionid, "version": version});
+	$.post(nginx_url, datadata, function(data,status) {
+        if (data.Status == "OK") {
+				    
+				 //window.location.reload();  
+				 list();   
         }   
     })
 }
@@ -110,6 +175,7 @@ function getFile() {
 		}
 	
 }
+	else filename = "";
 	
 
 	return filename;
@@ -124,7 +190,8 @@ function deletefile(name, version) {
 	
 	$.post(nginx_url, datadata, function(data,status) {
         if (data.Status == "OK") {
-				 window.location.reload();       
+				// window.location.reload();   
+				list();      
         }   
     })
 
@@ -135,14 +202,18 @@ function deleteuser(name, version) {
 	var login = getCookie("username");
 	var sessionid = getCookie("sessionid");
 	
-	var datadata = JSON.stringify({"username": login, "SID": sessionid}); 	
+	var datadata = JSON.stringify({"username": login, "SID": sessionid}); 
 	
-	$.post(nginx_url, datadata, function(data,status) {
-        if (data.Status == "OK") {
-				 window.location.replace("../");       
-        }   
-    })
-
+	var answer = confirm ("Do you really want to delete youself?")
+	if (answer) 
+		{
+				$.post(nginx_url, datadata, function(data,status) {
+      		  if (data.Status == "OK") {
+					 window.location.replace("../");       
+      	  }   
+    		})
+		}
+	
 }
 
 function del_cookie(name) {
@@ -156,19 +227,44 @@ function logout() {
 	var sessionid = getCookie("sessionid");
 	
 	var datadata = JSON.stringify({"username": login, "SID": sessionid}); 	
-	
-	$.post(nginx_url, datadata, function(data,status) {
-        if (data.Status == "OK") {
-				 del_cookie("sessionid");
-					del_cookie("login"); 
-					window.location.replace("../");       
-        }   
-    })
+	var answer = confirm ("Do you want to be logged out?")
+	if (answer) {
+		$.post(nginx_url, datadata, function(data,status) {
+   	     if (data.Status == "OK") {
+					 del_cookie("sessionid");
+						del_cookie("login"); 
+						window.location.replace("../");       
+   	     }   
+  	  })
+ 	}
 	 
 	
 }
 
+function checkSID() {
+	var nginx_url = "/check_sid";
+	var sessionid = getCookie("sessionid");
+	var login = getCookie("username");
+	alert(documen.cookie);
+	if (sessionid != "" && login != "") {
+		var datadata = JSON.stringify({"username": login, "SID": sessionid});
+		$.post(nginx_url, datadata, function(data,status) {
+        if (data.Status == "OK") {
+				    
+        }  
+        else
+        	 window.location.replace("../");  
+    })
+	}
+	else
+        	 window.location.replace("../");  
+	
+}
 
 
+window.onbeforeunload = function(){	
+    logout();
+}
+//checkSID();
 list();
 
