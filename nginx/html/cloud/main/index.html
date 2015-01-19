@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <title>Home</title>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript" src="../js/upload-testy2.js"></script>
         <link rel="stylesheet" type="text/css" href="../mystyles.css" media="screen"/>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 
@@ -29,15 +30,31 @@
         </div>
         <div class="options">
         		<p>Options</p>
+        		<form class="upload_form"id="upload_form" method="post">
+    				<span class="btn btn-info btn-file button-info"> File input
+						<input id="file_input" type="file" multiple>
+					</span>
+    				<div>
+        				<input class="btn btn-info button-info" id="submit_btn" type="submit" value="Upload">
+    				</div>
+				</form>
+	
         		
-				<span class="btn btn-info button-info btn-file">
-   				Browse <input type="file" id="myFile" name="myFile">
-				</span> 
-				<a class="btn btn-info button-info" onclick="upload()" name="upload_button">Upload File</a>
+        		
+        		
+				
+				<!-- <a class="btn btn-info button-info" onclick="upload()" name="upload_button">Upload File</a> -->
         		<a class="btn btn-warning button-info" onclick="logout()">Logout</a>
         		<a class="btn btn-danger button-info" onclick="deleteuser()">delete user</a>
-        
+        		
         </div>
+        
+        <div class="files_to_upload" > Files to upload:
+        		<ul id="file_list">
+    			<!-- File data will be listed here -->
+			</ul>
+        </div>
+        
         
 			  
         

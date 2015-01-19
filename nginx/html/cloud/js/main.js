@@ -101,22 +101,27 @@ function getTokenDownload() {
 	$.post(nginx_url, datadata, function(data,status) {
         if (data.Status == "OK") {
 				 document.cookie="tokendownload=" + data.Token;  
-				 docuement.cookie="versionupload" + data.version;				  
+				 document.cookie="versionupload=" + data.version;				  
         }   
     })
 }
 
-function getTokenUpload() {
+function getTokenUpload(myfilename, mysize) {
 	var nginx_url = "/addtokenupload";
 	var login = getCookie("username");
 	var sessionid = getCookie("sessionid");
-	var file = getFile();
-	var datadata = JSON.stringify({"username": login, "filename": file, "size": "1555", "SID": sessionid});
+	var file = myfilename;
+	var datadata = JSON.stringify({"username": login, "filename": file, "size": mysize.toString(), "SID": sessionid});
 	$.post(nginx_url, datadata, function(data,status) {
         if (data.Status == "OK") {
+        		 document.cookie = "tokenupload=" + data.Token;
 				 document.cookie="tokenupload=" + data.Token;
-				 document.cookie="versionupload" + data.Version;	  
-				 document.cookie="ID" + data.ID;	  				  
+				 document.cookie="versionupload=" + data.Version;	  
+				 document.cookie="ID=" + data.ID;	 
+				 
+				 
+				 
+				 list(); 				  
         }   
     })
 }
@@ -132,18 +137,18 @@ function download() {
 	getTokenDownload();
 }
 
-function addfile() {
+function addfile(myfilename, mysize) {
 	var nginx_url = "/addfile";
 	var login = getCookie("username");
 	var sessionid = getCookie("sessionid");
-	var file = getFile();
+	var file = myfilename
 	var version = getCookie("versionupload");
-	var datadata = JSON.stringify({"username": login, "filename": file, "size": "1555", "SID": sessionid});
+	var datadata = JSON.stringify({"username": login, "filename": file, "size": mysize.toString(), "SID": sessionid, "version": version});
 	$.post(nginx_url, datadata, function(data,status) {
         if (data.Status == "OK") {
 				 document.cookie="addtoken=" + data.Token;   
-				 //window.location.reload();  
-				 list();   
+				 window.location.reload();  
+				 //list();   
         }   
     })
 }
