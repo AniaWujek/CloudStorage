@@ -1,12 +1,14 @@
 from flask import Flask, jsonify, render_template, request
 from flask.ext.sqlalchemy import SQLAlchemy
+from add2 import add_token_download
+from add2 import add_token_upload
 from add2 import add_file
 from add2 import delete_file
 from add2 import add_user
 from add2 import delete_user
 from add2 import list_users
 from add2 import list_files
-from security import logout
+from add2 import logout
 from security import login
 from security import check_sid
 from lib import csred
@@ -18,6 +20,8 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///CS.db'
 
 app.route('/addfile',methods=["POST"])(add_file)
+app.route('/addtokendownload',methods=["POST"])(add_token_download)
+app.route('/addtokenupload',methods=["POST"])(add_token_upload)
 app.route('/deletefile',methods=["POST"])(delete_file)
 app.route('/adduser',methods=["POST"])(add_user)
 app.route('/deleteuser',methods=["POST"])(delete_user)

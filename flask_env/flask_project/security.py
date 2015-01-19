@@ -70,26 +70,3 @@ def check_sid():
 		return jsonify({"Status":"OK"})
 	else:
 		return jsonify({"Status":"ERROR"}),410
-##############################################################
-
-
-
-def logout():
-	json = request.get_json(force=True)
-	print "Logout " + json["username"] + " " + json["SID"]
-	print str(csred.get_SID(json["username"]))
-#SID checkout
-
-	print csred.get_SID(json["username"])
-	try:
-		if str(json["SID"]) != str(csred.get_SID(json["username"])):
-			print "Bad SID"
-			return jsonify({"Status":"ERROR","ID":"-2"}),401
-	except:
-		print "R base error."
-		return jsonify({"Status":"ERROR","ID":"-3"}),500
-#SID checkout positive
-	if csred.logout(json["username"],json["SID"]):
-		return jsonify({"Status":"OK"})
-	else:
-		return jsonify({"Status":"ERROR","ID":"-1"}),410

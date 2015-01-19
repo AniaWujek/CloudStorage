@@ -22,6 +22,7 @@ class File(db.Model):
 	edit_date = db.Column(db.DateTime)
 	version = db.Column(db.Integer)
 	size = db.Column(db.Integer)
+	upload = db.Column(db.Integer)
 
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	user = db.relationship('User',
@@ -29,11 +30,12 @@ class File(db.Model):
 	#unique constraints - uncomment for saving only one file per user
 	#__table_args__ = (UniqueConstraint('name', 'user_id', 'version', name='_name_user_version_uc'),)
 
-	def __init__(self, name, edit_date, version, size, user):
+	def __init__(self, name, edit_date, version, size, upload, user):
 		self.name = name
 		self.edit_date = edit_date
 		self.version = version
 		self.size = size
+		self.upload = upload
 		self.user = user
 
 	def __repr__(self):

@@ -27,13 +27,23 @@ def token(login, file, version, r=redis.Redis('localhost')):
 		return [0,int(r.hget(info, 'token'))]
 ##############################################################
 
-def chktoken(login, version, r=redis.Redis('localhost')):
+def chktoken(login, file, version, r=redis.Redis('localhost')):
 	login=login.lower()
 	file=file.lower()
 	info=login+':'+file+':'+str(version)
 	if r.hexists(info, 'token'):
 		r.expire(info, (maxtime_token))
 		return int(r.hget(info, 'token'))
+	else:
+		return -1
+
+def rmtoken(login, file, version, r=redis.Redis('localhost')):
+	login=login.lower()
+	file=file.lower()
+	info=login+':'+file+':'+str(version)
+	if r.hexists(info, 'token'):
+		r.delete(info)
+		return 1
 	else:
 		return -1
 ##############################################################

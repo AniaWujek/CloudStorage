@@ -103,26 +103,70 @@ def list_files():
 			sizes=str(row.size)
 			edit_dates=str(row.edit_date)
 			versions=str(row.version)
+			if row.upload==1:
+				uploads="Ready"
+			else:
+				uploads="Uploading..."
 		else:
 			names+=";"+str(row.name)
 			sizes+=";"+str(row.size)
 			edit_dates+=";"+str(row.edit_date)
 			versions+=";"+str(row.version)
+			if row.upload==1:
+				uploads+=";Ready"
+			else:
+				uploads+=";Uploading..."
 		i+=1
 	print list
-	return jsonify({"Status":"OK","names":names,"sizes":sizes,"edit_dates":edit_dates,"versions":versions})
-
-	
-
+	return jsonify({"Status":"OK","names":names,"sizes":sizes,"edit_dates":edit_dates,"versions":versions,"uploads":uploads})
 
 ##############################################################
 
 
+def delete_uploaded(username):#filename, year, month, day, version, size, username):
+
+	user = create.User.query.filter_by(login=json["username"]).first()
+	try:
+		oldfile = create.File.query.filter_by(user_id=user.id, upload=0).all()
+		for row in oldfile:
+			create.db.session.delete(row)
+			create.db.session.commit()
+	except:
+		print "Error choosing files."
+		return False
+	return True
+##############################################################
 
 
+def add_token_download():
+	json = request.get_json(force=True)
+#SID checkout
+
+	print csred.get_SID(json["username"])
+	try:
+		if str(json["SID"]) != str(csred.get_SID(json["username"])):
+			print "Bad SID"
+			return jsonify({"Status":"ERROR","ID":"-2"}),401
+	except:
+		print "R base error."
+		return jsonify({"Status":"ERROR","ID":"-3"}),500
+#SID checkout
+	user = create.User.query.filter_by(login=json["username"]).first()
+	try:
+		oldfile = create.File.query.filter_by(name=json["filename"], status=0, user=user).first()
+	except:
+		print "Error processing file row!"
+		return jsonify({"Status":"ERROR","ID":"-4"}),500
+	token = csred.token(json["username"],json["filename"],json["version"])
+		#print file.id
+	#if token[0]==1
+	#	return jsonify({"Status":"ERROR","ID":"-5"}),500
+	return jsonify({"Status":"OK","Token":token[1],"Existed":token[0],"Version":ver,"ID":file.id})
+	
+##############################################################
 
 
-def add_file():#filename, year, month, day, version, size, username):
+def add_token_upload():
 
 	json = request.get_json(force=True)
 	try:
@@ -152,7 +196,7 @@ def add_file():#filename, year, month, day, version, size, username):
 		
 	except:
 		print "creating new file..."
-	file = create.File(json["filename"], datetime.datetime.now(), ver, json["size"], user)
+	file = create.File(json["filename"], datetime.datetime.now(), ver, json["size"],0, user)
 
 	create.db.session.add(file)
 	try:
@@ -161,6 +205,50 @@ def add_file():#filename, year, month, day, version, size, username):
 		token = csred.token(json["username"],json["filename"],ver)
 		#print file.id
 		return jsonify({"Status":"OK","Token":token[1],"Existed":token[0],"Version":ver,"ID":file.id})
+	except:
+		print "ERROR:Cannot commit changes. Mayby file already exists?"
+		return jsonify({"Status":"ERROR","ID":"-1"}),409
+
+
+##############################################################
+
+def add_file():#filename, year, month, day, version, size, username):
+
+	json = request.get_json(force=True)
+	try:
+		print "Add file " + json["username"] + " " + json["filename"] + " " + json["size"] + " " + json["version"]  + " " +json["SID"]
+	except:
+		print "Bad json data."
+		return jsonify({"Status":"ERROR","ID":"-4"}),406
+		
+#SID checkout
+
+	print csred.get_SID(json["username"])
+	try:
+		if str(json["SID"]) != str(csred.get_SID(json["username"])):
+			print "Bad SID"
+			return jsonify({"Status":"ERROR","ID":"-2"}),401
+	except:
+		print "R base error."
+		return jsonify({"Status":"ERROR","ID":"-3"}),500
+#SID checkout positive
+	user = create.User.query.filter_by(login=json["username"]).first()
+	print "User checked." + str(user.login)
+	try:
+		oldfile = create.File.query.filter_by(name=json["filename"], upload=0, version=json["version"], user=user).update(dict(upload=1))
+		#oldfile.upload=1
+		
+	except:
+		print "Error processing file row!"
+		return jsonify({"Status":"ERROR","ID":"-5"}),409
+	
+
+	try:
+		create.db.session.commit()
+		print "FILE_TOKEN UNDER: " + str(json["username"]) + ":" + str(json["filename"]) + ":" + str(json["version"])
+		token = csred.rmtoken(json["username"],json["filename"],json["version"])
+		#print file.id
+		return jsonify({"Status":"OK"})
 	except:
 		print "ERROR:Cannot commit changes. Mayby file already exists?"
 		return jsonify({"Status":"ERROR","ID":"-1"}),409
@@ -198,3 +286,27 @@ def delete_file():#filename, year, month, day, version, size, username):
 	except:
 		print "ERROR:Cannot commit changes. Mayby file doesn't exist any more?"
 		return jsonify({"Status":"ERROR","ID":"-1"}),409
+##############################################################
+
+
+
+def logout():
+	json = request.get_json(force=True)
+	print "Logout " + json["username"] + " " + json["SID"]
+	print str(csred.get_SID(json["username"]))
+#SID checkout
+
+	print csred.get_SID(json["username"])
+	try:
+		if str(json["SID"]) != str(csred.get_SID(json["username"])):
+			print "Bad SID"
+			return jsonify({"Status":"ERROR","ID":"-2"}),401
+	except:
+		print "R base error."
+		return jsonify({"Status":"ERROR","ID":"-3"}),500
+#SID checkout positive
+	delete_uploaded(json["username"])
+	if csred.logout(json["username"],json["SID"]):
+		return jsonify({"Status":"OK"})
+	else:
+		return jsonify({"Status":"ERROR","ID":"-1"}),410
